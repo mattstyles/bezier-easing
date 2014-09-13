@@ -7,6 +7,9 @@ Wrapper around [bezier-easing](https://github.com/gre/bezier-easing)
 
     <bezier-easing x1="0" x2=".5" y1=".5" y2="1"></bezier-easing>
 
+    var easing = document.querySelector( 'bezier-easing' );
+    easing.calc( .25 );
+
 @element bezier-easing
 @blurb Wraps bezier-easing module into a Polymer element
 -->
@@ -14,7 +17,9 @@ Wrapper around [bezier-easing](https://github.com/gre/bezier-easing)
 
 
     <script charset="utf-8">
-        // Quick module wrapper to stop BezierEasing leaking to global
+        /**
+         * Quick module wrapper to stop BezierEasing leaking to global
+         */
         (function( global ) {
             if ( !global.module && !global.require && !global.exports ) {
                 var modules = [];
@@ -36,30 +41,68 @@ Wrapper around [bezier-easing](https://github.com/gre/bezier-easing)
     </script>
 
     <script src="./bezier-easing.js"></script>
-    <script charset="utf-8">
 
+    <script charset="utf-8">
         Polymer( 'bezier-easing', {
 
-            curve: null,
+            /**
+             * The curve function used to calculate easing
+             *
+             * @private
+             * @type BezierEasing
+             */
+            _curve: null,
 
             publish: {
 
+                /**
+                 * @attribute
+                 * @type Float
+                 */
                 x1: 0,
 
+
+                /**
+                 * @attribute
+                 * @type Float
+                 */
                 x2: 0,
 
+
+                /**
+                 * @attribute
+                 * @type Float
+                 */
                 y1: 1,
 
+
+                /**
+                 * @attribute
+                 * @type Float
+                 */
                 y2: 1
             },
 
+
+            /**
+             * Fired when polymer has set everything up and the element is ready.
+             * Grabs the BezierEasing function and sets up the curve
+             */
             ready: function() {
                 var BezierEasing = module.require()[ 0 ];
-                this.curve = BezierEasing( this.x1, this.x2, this.y1, this.y2 );
+                this._curve = BezierEasing( this.x1, this.x2, this.y1, this.y2 );
             },
 
+
+            /**
+             * Calculates the progression given a time
+             * Time will usually be in the 0 <= t <= 1 range
+             *
+             * @param time {Float}
+             * @return {Float} the progression value, clamped 0...1
+             */
             calc: function( time ) {
-                return this.curve( time );
+                return this._curve( time );
             }
 
         });
