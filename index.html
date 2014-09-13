@@ -8,22 +8,83 @@
 
     <link rel="import" href="./components/bezier-easing/bezier-easing.html">
 
+    <style media="screen">
+        body {
+            font-family: 'Helvetica Neue', Helvetica, 'Lucida Grande', Tahoma, 'Droid Sans', sans-serif;
+            font-size: 15px;
+            color: #3a3a3a;
+            -webkit-font-smoothing: antialiased;
+            padding: 20px;
+        }
+
+        noscript {
+            color: #96281B;
+        }
+
+        #wrapper {
+            position: fixed;
+            z-index: -1;
+        }
+
+        canvas {
+            /*background: #141822;*/
+        }
+    </style>
 </head>
 <body unresolved>
 
+    <bezier-easing id="round-ease-in" x1=".4" x2=".25" y1=".33" y2="1"></bezier-easing>
+
+    <div id="wrapper" fit>
+        <canvas><noscript>Of course you'll need Javascript on to view a Javascript demo</noscript></canvas>
+    </div>
+
     <p>An example of using <code>&lt;bezier-easing></code>:</p>
 
-    <bezier-easing id="round-ease-in" x1="0" x2=".5" y1=".5" y2="1"></bezier-easing>
-
     <script charset="utf-8">
-        document.addEventListener( 'polymer-ready', function() {
-            var t;
-            var easing = document.querySelector( '#round-ease-in' );
 
-            for ( t = 0; t <= 1; t = t + .1 ) {
-                console.log( easing.calc( t ) );
+
+        var canvas = document.querySelector( 'canvas' );
+        var ctx = canvas.getContext( '2d' );
+        var wrapper = document.querySelector( '#wrapper' );
+        var easing = document.querySelector( '#round-ease-in' );
+
+        function resize() {
+            canvas.width = wrapper.clientWidth;
+            canvas.height = wrapper.clientHeight;
+            update();
+        }
+
+        function drawCircle( x, y, r, color ) {
+            if ( color ) {
+                ctx.fillStyle = color;
             }
+            ctx.beginPath();
+            ctx.arc( x, y, r, 0, 2 * Math.PI, false );
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function update() {
+            ctx.clearRect( 0, 0, canvas.width, canvas.height );
+
+            for ( var i = 0; i <= canvas.width; i = i + 1 ) {
+                var ii = i / canvas.width;
+                var x = 50 + ( ii * ( canvas.width - 100 ) );
+                var y = 100 + ( ( canvas.height - 200 ) * easing.calc( ii ) );
+                drawCircle( x, y, 10, 'rgb( 255,'+Math.floor( 255 * ii )+',100)'  );
+            }
+        }
+
+        window.addEventListener( 'resize', resize );
+
+        document.addEventListener( 'polymer-ready', function() {
+            resize();
         });
+
+
+
+
     </script>
 
 </body>
